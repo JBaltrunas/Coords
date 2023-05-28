@@ -31,7 +31,29 @@ alphabet =\
         "Z": [(-2, 3), (2, 3), (-2, -3), (2, -3)],
     }
 t = turtle.Turtle()
+t.getscreen().colormode(255)
+t.hideturtle()
 t.speed(0)
+
+
+def set_pen_width(width=1):
+    t.pensize(width)
+
+
+def set_pen_color(r=0, g=0, b=0):
+    t.pencolor((r, g, b))
+
+
+def set_background_color(r=0, g=0, b=0):
+    t.getscreen().bgcolor((r, g, b))
+
+
+def set_pen_color(color):
+    t.pencolor(color)
+
+
+def set_background_color(color):
+    t.getscreen().bgcolor(color)
 
 
 def print_text(text, space=(1, 1), scale=(1, 1), offset=(0, 0)):
