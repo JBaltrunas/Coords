@@ -1,8 +1,20 @@
+import random
 import time
 import Printer.PolyPrinter as tt
 
 # Start params --------------------
 bg_color = (0, 0, 0)
+
+# Selected word
+selected_word_scale = (7, 7)
+selected_word_color = (15, 19, 118)
+selected_word_offset = (0, -100)
+selected_word_width = 3
+
+# Underline
+underline_color = (15, 19, 118)
+underline_width = 2
+underline_vertical_offset = -25
 
 # Border
 border_offset = (-10, -20)
@@ -73,6 +85,54 @@ letter_offsets = {}
 
 tt.set_background_color(bg_color)
 
+# Logic
+selected_word = ""
+gues_word = ""
+used_letters = ""
+
+
+def start_game():
+    pass
+
+
+def select_word():
+    f = open("WordGame/Word.txt")
+    words = f.read().split("\n")
+    f.close()
+    global selected_word, gues_word
+    selected_word = random.choice(words).upper()
+    gues_word = " " * len(selected_word)
+
+
+# GUI
+
+def draw_underlines():
+    lines = "V" * len(selected_word)
+    tt.set_pen_color(underline_color)
+    tt.set_pen_width(underline_width)
+    scale = selected_word_scale[0], 0
+    offset = selected_word_offset[0], selected_word_offset[1] + underline_vertical_offset
+    tt.print_text(lines, scale=scale, offset=offset)
+
+
+def draw_letter(letter):
+    tt.set_pen_color(selected_word_color)
+    tt.set_pen_width(selected_word_width)
+    letter = letter[0].upper()
+    line = ""
+    for ltt in selected_word:
+        if ltt == letter:
+            line += letter
+        else:
+            line += " "
+    tt.print_text(line, scale=selected_word_scale, offset=selected_word_offset)
+
+
+def draw_selected_word():
+    tt.set_pen_color(selected_word_color)
+    tt.set_pen_width(selected_word_width)
+    tt.print_text(selected_word, scale=selected_word_scale, offset=selected_word_offset)
+
 
 def draw_letters():
     tt.set_pen_color(letters_color)
@@ -100,7 +160,8 @@ def draw_hearts():
         tt.print_shape(heart, heart_scale, offset, loop=True)
         offset = offset[0] + heart_spaces, offset[1]
 
-def draw_heart_bordeers():
+
+def draw_heart_borders():
     tt.set_pen_color(heart_border_color)
     tt.set_pen_width(heart_border_size)
     for offset in hearts_offsets:
@@ -128,10 +189,12 @@ def draw_a_dead_guy():
 
 
 def draw_all():
+    draw_underlines()
     draw_full_border()
     draw_a_dead_guy()
     draw_hearts()
-    draw_heart_bordeers()
+    draw_heart_borders()
+    #draw_selected_word()
     for i in range(8, -1, -1):
         cross_heart(i)
     draw_letters()
