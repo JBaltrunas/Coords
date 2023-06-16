@@ -89,10 +89,54 @@ tt.set_background_color(bg_color)
 selected_word = ""
 gues_word = ""
 used_letters = ""
+health = len(drawing)
 
 
 def start_game():
-    pass
+    global used_letters, health, gues_word
+    select_word()
+
+    draw_underlines()
+    draw_full_border()
+    draw_letters()
+    draw_hearts()
+    draw_heart_borders()
+
+    while health > 0 and " " in gues_word:
+        letter = read_letter_nicht()
+        if letter in used_letters:
+            print("Letter already used")
+            continue
+        cross_letter(letter)
+        used_letters += letter
+        if letter in selected_word:
+            draw_letter(letter)
+            word = ""
+            for i in range(len(selected_word)):
+                if selected_word[i] == letter:
+                    word += letter
+                else:
+                    word += gues_word[i]
+            gues_word = word
+            print(gues_word)
+        else:
+            draw_a_dead_guy_part(heart_count - health)
+            health -= 1
+            cross_heart(health)
+
+    if health > 0:
+        print("You won")
+    else:
+        print(f"You lose ({selected_word})")
+
+
+def read_letter_nicht():
+    while True:
+        letter = input('Write letter: ')[0].upper()
+        if letter not in letters:
+            print(f"'{letter}' no")
+            continue
+        return letter
 
 
 def select_word():
@@ -181,6 +225,12 @@ def draw_full_border():
     tt.print_shape(full_border, border_scale, border_offset, True)
 
 
+def draw_a_dead_guy_part(part_nr):
+    tt.set_pen_color(dead_guy_color)
+    tt.set_pen_width(dead_guy_size)
+    tt.print_shape(drawing[part_nr], (30, 30))
+
+
 def draw_a_dead_guy():
     tt.set_pen_color(dead_guy_color)
     tt.set_pen_width(dead_guy_size)
@@ -194,7 +244,7 @@ def draw_all():
     draw_a_dead_guy()
     draw_hearts()
     draw_heart_borders()
-    #draw_selected_word()
+    draw_selected_word()
     for i in range(8, -1, -1):
         cross_heart(i)
     draw_letters()
