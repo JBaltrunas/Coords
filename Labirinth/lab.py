@@ -48,3 +48,20 @@ def draw_borders(borders, coord):
 def generate_lab():
     labirinth[(0, 0)] = (bool(random.random(1)), bool(random.random(1)), bool(random.random(1)), bool(random.random(1)))
     draw_borders(labirinth[(0, 0)], (0, 0))
+    add_block((0, 0))
+
+
+def add_block(coord):
+    up, right, down, left = labirinth[coord]
+    if up != True:
+        x, y = coord
+
+
+def get_new_block_borders(coord):
+    x, y = coord
+    up = right = down = left = None
+    if (x, y + 1) in labirinth:
+        up = labirinth[(x, y + 1)][2]
+    # TODO: check all
+
+    return up, right, down, left
