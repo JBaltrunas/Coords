@@ -4,15 +4,23 @@ import Printer.PolyPrinter as tt
 
 # Params start
 
-block_count = 3000
+block_count = 100000000
 
-max_x = 50
-min_x = -50
-max_y = 50
-min_y = -50
+size = 20
+scale = (size, size)
+offset = (size, size)
 
-scale = (10, 10)
-offset = (10, 10)
+max_x = 500 // size
+min_x = -500 // size
+max_y = 250 // size
+min_y = -250 // size
+
+# Colors
+
+border_color = (0, 255, 255)
+border_width = 3
+cell_background_color = (100, 100, 0)
+background_color = (0, 0, 0)
 
 # Params end
 
@@ -27,7 +35,7 @@ labirinth = {}
 path = []
 target = (0, 0)
 distance_to_target = 0
-
+tt.set_background_color(background_color)
 
 my_lab_1 = [
     ((True, True, True, False), (0, 0)),
@@ -40,6 +48,13 @@ my_lab_1 = [
     ((False, True, True, True), (0, -3)),
     ((True, False, True, True), (-3, -1))
 ]
+my_lab_2 = [
+    ((True, True, True, True), (0, 0)),
+    ((True, True, True, True), (50, 0)),
+    ((True, True, True, True), (0, 25)),
+    ((True, True, True, True), (-50, 0)),
+    ((True, True, True, True), (0, -25)),
+]
 
 
 def draw_lab(lab):
@@ -47,17 +62,32 @@ def draw_lab(lab):
         draw_borders(bor, cor)
 
 
+def draw_cell_background(x, y, offset):
+    tt.set_pen_color(cell_background_color)
+    tt.set_pen_width(1)
+    tt.t.fillcolor(cell_background_color)
+    tt.t.begin_fill()
+    tt.print_shape(up_border, scale, offset)
+    tt.print_shape(right_border, scale, offset)
+    tt.print_shape(down_border, scale, offset)
+    tt.print_shape(left_border, scale, offset)
+    tt.t.end_fill()
+
+
 def draw_borders(borders, coord):
     x, y = coord
     ox, oy = offset
     new_offset = x * ox, y * oy
-    if borders[0] == True:
+    draw_cell_background(x, y, new_offset)
+    tt.set_pen_width(border_width)
+    tt.set_pen_color(border_color)
+    if borders[0]:
         tt.print_shape(up_border, scale, new_offset)
-    if borders[1] == True:
+    if borders[1]:
         tt.print_shape(right_border, scale, new_offset)
-    if borders[2] == True:
+    if borders[2]:
         tt.print_shape(down_border, scale, new_offset)
-    if borders[3] == True:
+    if borders[3]:
         tt.print_shape(left_border, scale, new_offset)
 
 
