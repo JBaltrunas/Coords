@@ -4,9 +4,9 @@ import Printer.PolyPrinter as tt
 
 # Params start
 
-block_count = 100000000
+block_count = 15
 
-size = 20
+size = 15
 scale = (size, size)
 offset = (size, size)
 
@@ -17,10 +17,15 @@ min_y = -250 // size
 
 # Colors
 
-border_color = (0, 255, 255)
+border_color = (0, 0, 255)
 border_width = 3
-cell_background_color = (100, 100, 0)
+cell_background_color = (200, 200, 200)
 background_color = (0, 0, 0)
+
+# Player
+
+player_width = 5
+player_color = (255, 0, 0)
 
 # Params end
 
@@ -30,10 +35,10 @@ down_border = [(0.5, -0.5), (-0.5, -0.5)]
 left_border = [(-0.5, -0.5), (-0.5, 0.5)]
 
 
-
 labirinth = {}
 path = []
 target = (0, 0)
+player_path = [(0, 0)]
 distance_to_target = 0
 tt.set_background_color(background_color)
 
@@ -55,6 +60,73 @@ my_lab_2 = [
     ((True, True, True, True), (-50, 0)),
     ((True, True, True, True), (0, -25)),
 ]
+
+
+def start_game():
+    generate_lab()
+    while True: # TODO: check end of game
+        move_player()
+
+
+def draw_player_last_move():
+    tt.set_pen_color(player_color)
+    tt.set_pen_width(player_width)
+    tt.print_shape(player_path[-2:], scale)
+
+
+def remove_player_last_move():
+    tt.set_pen_color(player_color)
+    tt.set_pen_width(player_width)
+    a, b = player_path[-2:]
+    tt.print_shape([b, a], scale)
+
+
+def move_player():
+    dx, dy = get_player_direction()
+    nx, ny = player_path[-1]
+    nx += dx
+    ny += dy
+    if can_move_in_labirinth((dx, dy)):
+        if (nx, ny) in player_path:
+            remove_all_positions_until_selected((nx, ny))
+        else:
+            player_path.append((nx, ny))
+            draw_player_last_move()
+
+
+def can_move_in_labirinth(direction):
+    return True # TODO: check walls
+
+
+def remove_all_positions_until_selected(selected):
+    global player_path
+    if selected not in player_path:
+        return
+
+    back_path = []
+    for i in range(len(player_path) - 1, -1, -1):
+        if selected == player_path[i]:
+            back_path.append(player_path[i])
+            break
+        back_path.append(player_path[i])
+        player_path = player_path[:-1]
+
+    tt.set_pen_color(cell_background_color)
+    tt.set_pen_width(player_width)
+    tt.print_shape(back_path, scale)
+
+
+def get_player_direction():
+    while True:
+        key = input("Select direction (w, a, s, d) => (up, left, down, right): ")
+        if key == 'w' or key == 'W':
+            return (0, 1)
+        if key == 'a' or key == 'A':
+            return (-1, 0)
+        if key == 's' or key == 'S':
+            return (0, -1)
+        if key == 'd' or key == 'D':
+            return (1, 0)
 
 
 def draw_lab(lab):
@@ -93,9 +165,8 @@ def draw_borders(borders, coord):
 
 def generate_lab():
     global distance_to_target, target
-    # TODO: Do not close all
     first_block = (0, 0)
-    add_block(first_block)
+    generate_first_block(first_block)
     draw_borders(labirinth[first_block], first_block)
     for i in range(block_count):
         clear_path_if_no_directions()
@@ -109,6 +180,19 @@ def generate_lab():
         draw_borders(labirinth[new_coord], new_coord)
 
     close_labirinth()
+
+
+def generate_first_block(coord):
+    walls = [bool(random.random() > 0.5),
+             bool(random.random() > 0.5),
+             bool(random.random() > 0.5),
+             bool(random.random() > 0.5)]
+    if walls[0] and walls[1] and walls[2] and walls[3]:
+        walls[int(random.random() * 100) % 4] = False
+
+    borders = walls[0], walls[1], walls[2], walls[3]
+    path.append((borders, coord))
+    labirinth[coord] = borders
 
 
 def add_block(coord):
