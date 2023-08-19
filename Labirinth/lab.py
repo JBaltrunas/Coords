@@ -1,10 +1,12 @@
 import random
+import time
+from datetime import datetime
 
 import Printer.PolyPrinter as tt
 
 # Params start
 
-block_count = 15
+block_count = 250
 
 size = 15
 scale = (size, size)
@@ -20,7 +22,13 @@ min_y = -250 // size
 border_color = (0, 0, 255)
 border_width = 3
 cell_background_color = (200, 200, 200)
+start_cell_background_color = (0, 255, 0)
+end_cell_background_color = (252, 0, 0)
 background_color = (0, 0, 0)
+end_game_text_width_bg = 20
+end_game_text_color_bg = (255, 255, 255)
+end_game_text_width = 8
+end_game_text_color = (255, 0, 255)
 
 # Player
 
@@ -37,6 +45,7 @@ left_border = [(-0.5, -0.5), (-0.5, 0.5)]
 
 labirinth = {}
 path = []
+start = (0, 0)
 target = (0, 0)
 player_path = [(0, 0)]
 distance_to_target = 0
@@ -64,8 +73,21 @@ my_lab_2 = [
 
 def start_game():
     generate_lab()
-    while True: # TODO: check end of game
+    start_time = datetime.now()
+    while player_path[-1] != target:
         move_player()
+    time_text = str(datetime.now() - start_time).split(".")[0]
+    draw_end_game_text(time_text)
+
+
+def draw_end_game_text(time_text):
+    tt.set_pen_width(end_game_text_width_bg)
+    tt.set_pen_color(end_game_text_color_bg)
+    tt.print_text(f"YOU WIN\n{time_text}", scale=(10, 10))
+    tt.set_pen_width(end_game_text_width)
+    tt.set_pen_color(end_game_text_color)
+    tt.print_text(f"YOU WIN\n{time_text}", scale=(10, 10))
+    print(f"YOU WIN\n{time_text}")
 
 
 def draw_player_last_move():
@@ -95,7 +117,15 @@ def move_player():
 
 
 def can_move_in_labirinth(direction):
-    return True # TODO: check walls
+    if direction == (0, 1):
+        return not labirinth[player_path[-1]][0]
+    if direction == (1, 0):
+        return not labirinth[player_path[-1]][1]
+    if direction == (0, -1):
+        return not labirinth[player_path[-1]][2]
+    if direction == (-1, 0):
+        return not labirinth[player_path[-1]][3]
+    return False
 
 
 def remove_all_positions_until_selected(selected):
@@ -134,10 +164,10 @@ def draw_lab(lab):
         draw_borders(bor, cor)
 
 
-def draw_cell_background(x, y, offset):
-    tt.set_pen_color(cell_background_color)
+def draw_cell_background(x, y, offset, bg_color = cell_background_color):
     tt.set_pen_width(1)
-    tt.t.fillcolor(cell_background_color)
+    tt.set_pen_color(bg_color)
+    tt.t.fillcolor(bg_color)
     tt.t.begin_fill()
     tt.print_shape(up_border, scale, offset)
     tt.print_shape(right_border, scale, offset)
@@ -146,11 +176,11 @@ def draw_cell_background(x, y, offset):
     tt.t.end_fill()
 
 
-def draw_borders(borders, coord):
+def draw_borders(borders, coord, bg_color = cell_background_color):
     x, y = coord
     ox, oy = offset
     new_offset = x * ox, y * oy
-    draw_cell_background(x, y, new_offset)
+    draw_cell_background(x, y, new_offset, bg_color)
     tt.set_pen_width(border_width)
     tt.set_pen_color(border_color)
     if borders[0]:
@@ -180,6 +210,8 @@ def generate_lab():
         draw_borders(labirinth[new_coord], new_coord)
 
     close_labirinth()
+    draw_borders(labirinth[start], start, start_cell_background_color)
+    draw_borders(labirinth[target], target, end_cell_background_color)
 
 
 def generate_first_block(coord):
