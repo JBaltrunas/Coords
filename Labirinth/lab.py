@@ -6,7 +6,7 @@ import Printer.PolyPrinter as tt
 
 # Params start
 
-block_count = 250
+block_count = 25
 
 size = 15
 scale = (size, size)
@@ -83,10 +83,10 @@ def start_game():
 def draw_end_game_text(time_text):
     tt.set_pen_width(end_game_text_width_bg)
     tt.set_pen_color(end_game_text_color_bg)
-    tt.print_text(f"YOU WIN\n{time_text}", scale=(10, 10))
+    tt.print_text(f"YOU WIN\n{time_text}", scale=(10, 10), offset=(0, 10))
     tt.set_pen_width(end_game_text_width)
     tt.set_pen_color(end_game_text_color)
-    tt.print_text(f"YOU WIN\n{time_text}", scale=(10, 10))
+    tt.print_text(f"YOU WIN\n{time_text}", scale=(10, 10), offset=(0, 10))
     print(f"YOU WIN\n{time_text}")
 
 
