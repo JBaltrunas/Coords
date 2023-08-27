@@ -1,3 +1,4 @@
+import keyboard
 import random
 import time
 from datetime import datetime
@@ -148,7 +149,7 @@ def remove_all_positions_until_selected(selected):
 
 def get_player_direction():
     while True:
-        key = input("Select direction (w, a, s, d) => (up, left, down, right): ")
+        key = keyboard.read_key()
         if key == 'w' or key == 'W':
             return (0, 1)
         if key == 'a' or key == 'A':
